@@ -1,20 +1,26 @@
 <script setup>
 import { ref, computed } from "vue";
 
+import SlotComp from "./SlotComp.vue";
+
 defineProps({
   msg: {
     type: String,
     required: true,
   },
 });
-console.log(`hello`);
+const books = ref(["naruto", "dragon ball"]);
 </script>
 
 <template>
   <h1>This is Home Page</h1>
-  <h2>Publish book --> {{ publishedBooks }}</h2>
-  <h3>book list -> {{ author.books }}</h3>
-  <button @click="emptyBook('vue1')">Empty book</button>
+  <!-- Passing Parent's state into slot child -->
+  <SlotComp #bottom>
+    <p v-for="book in books">{{ book }}</p>
+  </SlotComp>
+  <br />
+  <!-- using parent prop to access slot state -->
+  <SlotComp #top="{ source }"></SlotComp>
 </template>
 
 <style scoped>
