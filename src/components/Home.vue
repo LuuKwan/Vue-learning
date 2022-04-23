@@ -1,19 +1,44 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
 
-defineProps({
+const props = defineProps({
   msg: {
     type: String,
     required: true,
   },
 });
+
+const API_URL = `https://api.github.com/repos/vuejs/core/commits?per_page=3&sha=`;
+const branches = ["main", "v2-compat"];
+
+const currentBranch = ref(branches[0]);
+const commits = ref(null);
+
+const watchBranch = watchEffect(async () => {
+  const url = `${API_URL}${currentBranch.value}`;
+  commits.value = await (await fetch(url)).json();
+  console.warn(commits.value);
+});
 </script>
 
 <template>
-  <h1>This is Home Page</h1>
-  <h2>Publish book --> {{ publishedBooks }}</h2>
-  <h3>book list -> {{ author.books }}</h3>
-  <button @click="emptyBook('vue1')">Empty book</button>
+  <h1>Latest Vue Core Commits</h1>
+  <!-- radio option -->
+  <template v-for="(branch, idx) in branches">
+    <input
+      type="radio"
+      name="branch"
+      id="idx"
+      :value="branch"
+      v-model="currentBranch"
+    />
+    <label :for="branch"> {{ branch }}</label>
+  </template>
+  <ul>
+    <li v-for="{ author } in commits">
+      {{ author }}
+    </li>
+  </ul>
 </template>
 
 <style scoped>
